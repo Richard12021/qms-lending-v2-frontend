@@ -105,6 +105,14 @@ export function useLendingPool(
 
   const [error, setError] = useState<string | null>(null);
 
+  // Keep low-level RPC and contract errors out of the public UI.
+  const userFacingError = (details: string): string => {
+    if (/stale oracle price|oracle|price unavailable/i.test(details)) {
+      return "Oracle price temporarily unavailable";
+    }
+    return "Unable to load lending data. Please try again later.";
+  };
+
   const refresh = useCallback(async () => {
     if (!isLendingPoolDeployed()) {
       setStatus("not-deployed"); setData(EMPTY_DATA); setTokenPositions({}); return;
@@ -133,6 +141,10 @@ const provider = new JsonRpcProvider(
       let totalBorrowed = 0n;
       let totalLiquidity = 0n;
       let incomplete = false;
+      const readErrors: string[] = [];
+      let suppliedIncomplete = false;
+      let borrowedIncomplete = false;
+      let liquidityIncomplete = false;
       const protocolTokenTotals: ProtocolTokenTotal[] = [];
       for (const token of markets) {
         const [supplied, borrowed, liquid] = await Promise.all([
@@ -151,22 +163,32 @@ const provider = new JsonRpcProvider(
         const values = await Promise.allSettled(amounts.map((amount) =>
           amount === 0n ? Promise.resolve(0n) : contract.getAssetValue(token.address, amount) as Promise<bigint>
         ));
-        if (values.some((v) => v.status === "rejected")) incomplete = true;
+        const metrics = ["supplied", "borrowed", "available liquidity"];
+        values.forEach((result, index) => {
+          if (result.status === "rejected") {
+            incomplete = true;
+            if (index === 0) suppliedIncomplete = true;
+            if (index === 1) borrowedIncomplete = true;
+            if (index === 2) liquidityIncomplete = true;
+            const reason = result.reason instanceof Error ? result.reason.message : String(result.reason);
+            readErrors.push(`${token.symbol} ${metrics[index]} valuation failed: ${reason}`);
+          }
+        });
         if (values[0].status === "fulfilled") totalSupplied += values[0].value;
         if (values[1].status === "fulfilled") totalBorrowed += values[1].value;
         if (values[2].status === "fulfilled") totalLiquidity += values[2].value;
       }
       const publicData = {
-        totalSuppliedUsd: incomplete ? null : formatUnits(totalSupplied, 18),
-        protocolBorrowedUsd: incomplete ? null : formatUnits(totalBorrowed, 18),
-        availableLiquidityUsd: incomplete ? null : formatUnits(totalLiquidity, 18),
+        totalSuppliedUsd: suppliedIncomplete ? null : formatUnits(totalSupplied, 18),
+        protocolBorrowedUsd: borrowedIncomplete ? null : formatUnits(totalBorrowed, 18),
+        availableLiquidityUsd: liquidityIncomplete ? null : formatUnits(totalLiquidity, 18),
         protocolTokenTotals,
       };
       if (!address || !isQMSNetwork) {
         setData({ ...EMPTY_DATA, ...publicData });
         setTokenPositions({});
         setStatus(incomplete ? "partial" : "ready");
-        setError(incomplete ? "Some active markets have stale or missing oracle prices" : null);
+        setError(incomplete ? userFacingError(readErrors.join(" | ")) : null);
         return;
       }
       const wallet = getOKXProvider();
@@ -177,6 +199,7 @@ const provider = new JsonRpcProvider(
       }
       const positions: LendingTokenPositions = {};
       let mySupplied = 0n;
+      let mySuppliedIncomplete = false;
       for (const token of markets) {
         const [supplied, collateral, borrowed] = await Promise.all([
           contract.suppliedBalances(address, token.address) as Promise<bigint>,
@@ -191,7 +214,11 @@ const provider = new JsonRpcProvider(
         };
         if (supplied !== 0n) {
           try { mySupplied += await contract.getAssetValue(token.address, supplied) as bigint; }
-          catch { incomplete = true; }
+          catch (err) {
+            incomplete = true;
+            mySuppliedIncomplete = true;
+            readErrors.push(`${token.symbol} personal supply valuation failed: ${err instanceof Error ? err.message : String(err)}`);
+          }
         }
       }
       const results = await Promise.allSettled([
@@ -201,21 +228,28 @@ const provider = new JsonRpcProvider(
         contract.getHealthFactor(address) as Promise<bigint>,
       ]);
       const val = (i: number): bigint | null => results[i].status === "fulfilled" ? results[i].value as bigint : null;
+      const methodNames = ["getTotalCollateralValue", "getTotalDebtValue", "getAvailableBorrowValue", "getHealthFactor"];
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          const reason = result.reason instanceof Error ? result.reason.message : String(result.reason);
+          readErrors.push(`${methodNames[index]} failed: ${reason}`);
+        }
+      });
       const debt = val(1);
       const ready = !incomplete && results.every((r) => r.status === "fulfilled");
       setTokenPositions(positions);
       setData({
         ...publicData,
-        mySuppliedUsd: incomplete ? null : formatUnits(mySupplied, 18),
+        mySuppliedUsd: mySuppliedIncomplete ? null : formatUnits(mySupplied, 18),
         totalCollateralUsd: val(0) === null ? null : formatUnits(val(0)!, 18),
         totalDebtUsd: debt === null ? null : formatUnits(debt, 18),
         availableBorrowUsd: val(2) === null ? null : formatUnits(val(2)!, 18),
         healthFactor: debt === 0n ? "∞" : val(3) === null ? null : Number(formatUnits(val(3)!, 18)).toFixed(2),
       });
       setStatus(ready ? "ready" : "partial");
-      setError(ready ? null : "Some oracle prices or position values are unavailable");
+      setError(ready ? null : userFacingError(readErrors.join(" | ")));
     } catch (err) {
-      setStatus("error"); setError(err instanceof Error ? err.message : String(err));
+      setStatus("error"); setError(userFacingError(err instanceof Error ? err.message : String(err)));
     }
   }, [address, isQMSNetwork]);
 
