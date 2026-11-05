@@ -112,7 +112,16 @@ export function useLendingPool(
     setStatus("loading"); setError(null);
     try {
       // Public protocol metrics must work without a connected wallet.
-      const provider = new JsonRpcProvider(import.meta.env.DEV ? "https://rpc.testnet.qms.finance" : "/api/rpc", QMS_LENDING_POOL_CHAIN_ID);
+      
+const rpcUrl = import.meta.env.DEV
+  ? "https://rpc.testnet.qms.finance"
+  : new URL("/api/rpc", window.location.origin).href;
+
+const provider = new JsonRpcProvider(
+  rpcUrl,
+  QMS_LENDING_POOL_CHAIN_ID
+);
+
       const contract = new Contract(QMS_LENDING_POOL_ADDRESS, QMS_LENDING_POOL_ABI, provider);
       if (await provider.getCode(QMS_LENDING_POOL_ADDRESS) === "0x") {
         throw new Error("Lending Pool not deployed at configured address");
