@@ -1,0 +1,316 @@
+
+.lending-docs {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f4f2ff;
+}
+
+.docs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.docs-eyebrow {
+  display: block;
+  color: #a78bfa;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+.docs-header h1 {
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 750;
+  margin: 0 0 12px;
+}
+
+.docs-header p {
+  color: #a5a1bb;
+  line-height: 1.8;
+  max-width: 650px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.docs-version {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(124, 92, 255, 0.12);
+  border: 1px solid rgba(124, 92, 255, 0.25);
+  color: #b5a4ff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.docs-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.docs-sidebar {
+  position: sticky;
+  top: 88px;
+  padding: 20px 12px;
+  background: #151421;
+  border: 1px solid #29263c;
+  border-radius: 14px;
+}
+
+.docs-sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  margin-bottom: 20px;
+  color: #9690b1;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.docs-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.docs-nav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #a8a4bc;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.docs-nav-item:hover {
+  background: #242037;
+  color: #fff;
+}
+
+.docs-nav-item.active {
+  background: #34265c;
+  color: #c6b6ff;
+  font-weight: 650;
+}
+
+.docs-nav-item svg {
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+.docs-article {
+  min-width: 0;
+  min-height: 650px;
+  padding: clamp(24px, 4vw, 42px);
+  background: #151421;
+  border: 1px solid #29263c;
+  border-radius: 16px;
+}
+
+.docs-article-label {
+  color: #9d86ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.docs-article h2 {
+  margin: 0 0 24px;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.25;
+  color: #fff;
+}
+
+.docs-article h3 {
+  margin: 30px 0 14px;
+  font-size: 19px;
+  color: #f5f3ff;
+}
+
+.docs-article p {
+  margin: 0 0 18px;
+  color: #aaa6c0;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.docs-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 28px 0;
+}
+
+.docs-feature-card {
+  padding: 24px;
+  background: #1d1a2d;
+  border: 1px solid #322b4d;
+  border-radius: 12px;
+}
+
+.docs-feature-card svg {
+  color: #a78bfa;
+}
+
+.docs-feature-card h3 {
+  font-size: 16px;
+  margin: 16px 0 8px;
+}
+
+.docs-feature-card p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.docs-notice-box {
+  margin: 26px 0;
+  padding: 20px 22px;
+  border-left: 3px solid #8b5cf6;
+  border-radius: 8px;
+  background: #211b35;
+}
+
+.docs-notice-box strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #d3c5ff;
+  font-size: 14px;
+}
+
+.docs-notice-box p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.docs-external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ad96ff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.docs-external-link:hover {
+  color: #d1c3ff;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .docs-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .docs-sidebar {
+    position: static;
+    padding: 14px;
+  }
+
+  .docs-sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .docs-article {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 540px) {
+  .docs-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .docs-sidebar nav {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-article {
+    padding: 22px 18px;
+  }
+}
+
+.docs-article ol,
+.docs-article ul {
+  padding-left: 24px;
+  margin: 16px 0 26px;
+  color: #aaa6c0;
+}
+
+.docs-article li {
+  padding-left: 5px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.docs-article li::marker {
+  color: #a78bfa;
+}
+
+.docs-article li strong {
+  color: #e7e0ff;
+}
+
+.docs-article code {
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 12px;
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 3px 6px;
+  border-radius: 5px;
+  overflow-wrap: anywhere;
+}
+
+
+/* Docs light mode — scoped to the app theme. */
+.light-theme .lending-docs { color: #241c3a; }
+.light-theme .docs-eyebrow,
+.light-theme .docs-article-label { color: #7048d2; }
+.light-theme .docs-header p,
+.light-theme .docs-article p,
+.light-theme .docs-article ol,
+.light-theme .docs-article ul { color: #625c75; }
+.light-theme .docs-version { background: #f1ebff; border-color: #ddd0fa; color: #6741bc; }
+.light-theme .docs-sidebar,
+.light-theme .docs-article { background: #fff; border-color: #e4e1ee; }
+.light-theme .docs-sidebar-title { color: #756d87; }
+.light-theme .docs-nav-item { color: #655e77; }
+.light-theme .docs-nav-item:hover { background: #f2edfc; color: #32234c; }
+.light-theme .docs-nav-item.active { background: #eee6ff; color: #6034b8; }
+.light-theme .docs-article h2,
+.light-theme .docs-article h3 { color: #241c3a; }
+.light-theme .docs-feature-card { background: #faf8ff; border-color: #e7dff5; }
+.light-theme .docs-feature-card svg { color: #7048d2; }
+.light-theme .docs-notice-box { background: #f4efff; border-left-color: #8155e5; }
+.light-theme .docs-notice-box strong,
+.light-theme .docs-article li strong { color: #50319b; }
+.light-theme .docs-external-link,
+.light-theme .docs-article li::marker { color: #7048d2; }
+.light-theme .docs-external-link:hover { color: #4e299d; }
+.light-theme .docs-article code { background: #f0eaff; color: #5930b0; }
