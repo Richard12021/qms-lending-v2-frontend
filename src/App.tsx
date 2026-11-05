@@ -52,6 +52,22 @@ const ERC20_ABI = [
 
 type Page = "Dashboard" | "Markets" | "My Position" | "Docs";
 
+const PAGE_PATHS: Record<Page, string> = {
+  Dashboard: "/dashboard",
+  Markets: "/markets",
+  "My Position": "/myposition",
+  Docs: "/docs",
+};
+
+function getPageFromPath(pathname: string): Page {
+  const normalized = pathname.replace(/\/+$/, "").toLowerCase() || "/";
+  if (normalized === "/markets") return "Markets";
+  if (normalized === "/myposition") return "My Position";
+  if (normalized === "/docs") return "Docs";
+  return "Dashboard";
+}
+
+
 
 const markets = [
   {
@@ -180,7 +196,28 @@ const handleDisconnect = () => {
 };
 
   
-  const [page, setPage] = useState<Page>("Dashboard");
+  const [page, setPage] = useState<Page>(() => getPageFromPath(window.location.pathname));
+
+  useEffect(() => {
+    // Keep the URL canonical, including the initial visit to "/".
+    const current = window.location.pathname;
+    const canonical = PAGE_PATHS[getPageFromPath(current)];
+    if (current !== canonical) {
+      window.history.replaceState(null, "", canonical + window.location.search + window.location.hash);
+    }
+    const handlePopState = () => setPage(getPageFromPath(window.location.pathname));
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigateTo = (nextPage: Page) => {
+    const path = PAGE_PATHS[nextPage];
+    if (window.location.pathname !== path) {
+      window.history.pushState(null, "", path);
+    }
+    setPage(nextPage);
+    setSidebarOpen(false);
+  };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     try {
@@ -227,8 +264,7 @@ const handleDisconnect = () => {
                   page === item.name ? "active" : ""
                 }`}
                 onClick={() => {
-                  setPage(item.name);
-                  setSidebarOpen(false);
+                  navigateTo(item.name);
                 }}
               >
                 <Icon size={19} />
@@ -268,8 +304,7 @@ const handleDisconnect = () => {
         page === "Docs" ? "active" : ""
       }`}
       onClick={() => {
-        setPage("Docs");
-        setSidebarOpen(false);
+        navigateTo("Docs");
       }}
     >
       <BookOpen size={15} />
@@ -511,7 +546,7 @@ const handleDisconnect = () => {
                   </p>
                   <button
                     className="hero-button"
-                    onClick={() => setPage("Markets")}
+                    onClick={() => navigateTo("Markets")}
                   >
                     Explore Markets
                     <ArrowUpRight size={18} />
@@ -564,7 +599,7 @@ const handleDisconnect = () => {
                 <h2>Lending Markets</h2>
                 <button
                   className="text-button"
-                  onClick={() => setPage("Markets")}
+                  onClick={() => navigateTo("Markets")}
                 >
                   View all markets
                   <ArrowUpRight size={16} />
