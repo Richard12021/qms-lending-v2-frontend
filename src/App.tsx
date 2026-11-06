@@ -528,6 +528,29 @@ const handleDisconnect = () => {
         <div className="content">
           {page === "Dashboard" && (
             <>
+
+              <div
+                role="note"
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 10,
+                  padding: "12px 16px",
+                  marginBottom: 20,
+                  border: "1px solid rgba(245, 158, 11, 0.35)",
+                  borderRadius: 12,
+                  background: "rgba(245, 158, 11, 0.07)",
+                  color: "inherit",
+                }}
+              >
+                <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: 2, color: "#f59e0b" }} />
+                <div>
+                  <strong style={{ display: "block", marginBottom: 3 }}>Testnet Demo Prices</strong>
+                  <span style={{ fontSize: 13, opacity: 0.8 }}>
+                    Asset prices are fixed for testing purposes and do not reflect live market prices.
+                  </span>
+                </div>
+              </div>
               <section className="hero">
                 <div>
                   <div className="eyebrow">
@@ -640,6 +663,29 @@ refreshLendingPool={lendingPool.refresh}
 
           {page === "Markets" && (
             <>
+
+              <div
+                role="note"
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 10,
+                  padding: "12px 16px",
+                  marginBottom: 20,
+                  border: "1px solid rgba(245, 158, 11, 0.35)",
+                  borderRadius: 12,
+                  background: "rgba(245, 158, 11, 0.07)",
+                  color: "inherit",
+                }}
+              >
+                <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: 2, color: "#f59e0b" }} />
+                <div>
+                  <strong style={{ display: "block", marginBottom: 3 }}>Testnet Demo Prices</strong>
+                  <span style={{ fontSize: 13, opacity: 0.8 }}>
+                    Asset prices are fixed for testing purposes and do not reflect live market prices.
+                  </span>
+                </div>
+              </div>
               <div className="page-heading">
                 <h1>Lending Markets</h1>
                 <p>
