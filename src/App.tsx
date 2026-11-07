@@ -1,3 +1,7 @@
+
+
+import ProtocolAnalytics from "./components/ProtocolAnalytics";
+
 import { useLendingPool } from "./hooks/useLendingPool";
 import type { LendingTokenPositions } from "./hooks/useLendingPool";
 
@@ -617,6 +621,8 @@ const handleDisconnect = () => {
 
 </div>
 
+
+              <ProtocolAnalytics />
 
               <div className="section-heading markets-heading">
                 <h2>Lending Markets</h2>
